@@ -1,0 +1,278 @@
+---
+title: "Untitled"
+author: "Krisil"
+date: "1 December 2018"
+output: pdf_document
+---
+
+
+```{r}
+library(RCurl)
+library(knitr)
+library(plyr)
+library(qcc)
+library(threejs)
+library(rgl)
+library(pca3d)
+library(gridExtra)
+library(IQCC)
+library(qcr)
+library(histmdl)
+library(factoextra)
+library(MSQC)
+```
+
+```{r}
+manufdata<-read.csv(file.choose(),header=F)
+```
+
+```{r}
+for (i in 1:209)
+{
+  names(manufdata)[i]<-paste(i)
+}
+```
+
+```{r}
+head(manufdata)
+```
+
+```{r}
+pca_data<-prcomp(manufdata,center = T)
+```
+
+```{r}
+names(pca_data)
+
+```
+
+```{r}
+screeplot(pca_data, npcs = min(10, length(pca_data$sdev)),
+          type = c("barplot", "lines"),
+          main = deparse(substitute(pca_data)))
+```
+
+```{r}
+fviz_eig(pca_data)
+
+```
+
+
+
+```{r}
+PCA<-pca_data$sdev^2
+PCA1<-PCA[1:10]
+qcc::pareto.chart(PCA1,cumperc = seq(0, 100, by = 5),xlab="PCs")
+```
+
+
+```{r}
+imppca<-as.data.frame(pca_data$x[,1:4])
+```
+
+```{r}
+imppca
+```
+
+```{r}
+t2<-mqcc(imppca, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+(t2$violations)
+```
+
+```{r}
+imppca2<-imppca[-c(6,77,269,270,445,447,452,455,530,531,532,533,534,535,536,537,538),]
+```
+
+```{r}
+t22<-mqcc(imppca2, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t22$violations
+```
+
+
+```{r}
+imppca3<-imppca2[-c(5,15,18,23,207,425,443, 444, 445, 446, 447, 448, 450, 522),]
+```
+
+```{r}
+t23<-mqcc(imppca3, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t23$violations
+```
+
+```{r}
+imppca4<-imppca3[-c(4  , 6,   7,   8,  13,  16,  20,  24,  25,  34,  72, 149, 318, 435, 436),]
+```
+
+```{r}
+t24<-mqcc(imppca4, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+ t24$violations
+```
+
+```{r}
+imppca5<-imppca4[-c(1,   2,   4,   5,   7,   8,  12,  14,  16,  24,  42,  62, 245, 437),]
+```
+
+```{r}
+t25<-mqcc(imppca5, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+## m CUSUM:
+
+
+```{r}
+mcusum1<-mult.chart(type = c( "mcusum2"), imppca, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw",xlab="Sample",ylab="CUSUM Statistic")
+```
+
+
+```{r}
+x<-as.vector(which(mcusum1$t2>6))
+length(x)
+```
+
+```{r}
+imppca02<-imppca[-x,]
+```
+
+```{r}
+mcusum2<-mult.chart(type = c( "mcusum2"), imppca02, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+
+```{r}
+x<-as.vector(which(mcusum2$t2>6))
+length(x)
+```
+
+```{r}
+imppca03<-imppca02[-x,]
+```
+
+```{r}
+mcusum3<-mult.chart(type = c( "mcusum2"), imppca03, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+```{r}
+x<-as.vector(which(mcusum3$t2>6))
+length(x)
+```
+
+```{r}
+imppca04<-imppca03[-x,]
+```
+
+```{r}
+mcusum4<-mult.chart(type = c( "mcusum2"), imppca04, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+
+```{r}
+x<-as.vector(which(mcusum4$t2>6))
+length(x)
+```
+
+```{r}
+imppca05<-imppca04[-x,]
+```
+
+```{r}
+mcusum5<-mult.chart(type = c( "mcusum2"), imppca05, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+## Iteration 2:
+
+```{r}
+t212<-mqcc(imppca05, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t212$violations
+```
+
+```{r}
+imppca06<-imppca05[-c(1,  23,  24,  25, 101, 155, 371, 387, 399 ,432, 433),]
+```
+
+```{r}
+t213<-mqcc(imppca06, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t213$violations
+```
+
+```{r}
+imppca07<-imppca06[-c( 264, 305, 393, 402),]
+```
+
+```{r}
+t214<-mqcc(imppca07, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t214$violations
+```
+
+```{r}
+imppca08<-imppca07[-c(2,  49, 204, 267 ,389),]
+```
+
+```{r}
+t215<-mqcc(imppca08, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+t215$violations
+```
+
+```{r}
+imppca09<-imppca08[-c(385,388),]
+```
+
+```{r}
+t216<-mqcc(imppca09, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+```{r}
+mcusum6<-mult.chart(type = c( "mcusum2"), imppca09, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+```{r}
+x<-as.vector(which(mcusum6$t2>6))
+length(x)
+```
+
+```{r}
+imppca010<-imppca09[-x,]
+```
+
+```{r}
+mcusum7<-mult.chart(type = c( "mcusum2"), imppca010, alpha = 0.0027, k = 1.5, h = 6, phase = 1, method = "sw")
+```
+
+```{r}
+t217<-mqcc(imppca010, type = c("T2", "T2.single"),limits = TRUE, pred.limits = FALSE,plot = TRUE,alpha=0.0027)
+```
+
+
+```{r}
+mean(imppca010$PC1)
+mean(imppca010$PC2)
+mean(imppca010$PC3)
+mean(imppca010$PC4)
+```
+
+```{r}
+as.matrix(cov(imppca010))
+```
+
