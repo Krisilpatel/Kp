@@ -11,6 +11,7 @@ After applying PCA, I have leveraged pareto chart to select important Principal 
 For anomaly detection I have applied concepts of T2 Hotelling control chart and multivariate CUSUM (Cumulative Sum) approach. I idea behind applying two concepts is to provide ability to detect two types of anomaly: 
 1) Gradual but small change 
 2) Sudden but sharp change
+
 m-CUSUM chart enables the algorithm to detect type 1 kind of anomaly because m-CUSUM chart has cumulative memory which helps to track gradual deviation from the QC standards. m-CUSUM uses memory of mean of each parameter hence it will enable the algorithm to detect deviation in mean.
 T2 hotelling chart enables the algorithm to detect type 2 kind of anomaly because T2 chart uses statistical distance instead of cartesian distance. Statistical distance has variation term in it which helps to detect changes in variation of data eventhough the mean remains the same. This is critical from the point of view of maintaining variation of system under control. 
 Since both of this charts are used simultaneously, the quality control department has ability to detect any kind of anomaly in process.
